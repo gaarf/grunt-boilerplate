@@ -1,4 +1,24 @@
-# Grunt Boilerplate
+# KitchenSink Boilerplate
+
+Use all the JS goodies!
+ * Express
+ * Grunt
+ * Bower
+ * Handlebars client/server
+ * Browserify
+ * LESS + Autoprefixer
+ * UglifyJS, CSSmin, imagemin
+ * Mocha with Chai assertions
+ * QUnit via PhantomJS
+ * JShint + HTMLtidy
+ * LiveReload for all the above
+
+Bundled client-side libs:
+ * jQuery, duh
+ * Normalize + Pure CSS
+ * Backbone.js
+ * Font-Awesome
+
 
 ### dependencies
 
