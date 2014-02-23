@@ -1,3 +1,5 @@
+@import (css) "../bower_components/font-awesome/css/font-awesome.min.css";
+
 @import (less) "../bower_components/normalize-css/normalize.css";
 @import (less) "../bower_components/pure/grids.css";
 
@@ -58,6 +60,16 @@ a {
         color: @link-color;        
         text-decoration: underline;
     }
+
+    > .fa {
+        &:first-child {
+            margin-right:.3em;
+        }
+        &:last-child {
+            margin-left:.3em;
+        }
+    }
+
 }
 
 

@@ -13,7 +13,8 @@
     "pure": "~0.4.2",
     "html5shiv": "~3.7.0",
     "jquery": "1.11.0",
-    "backbone": "~1.1.1"
+    "backbone": "~1.1.1",
+    "font-awesome": "~4.0.3"
   },
   "devDependencies": {
     "qunit": "~1.14.0"
