@@ -9,7 +9,7 @@
     "start": "nohup node server.js grunt-boilerplate &",
     "stop": "pkill -fx \"node server.js grunt-boilerplate\" || true"
   },
-  "author": "@gaarf <onlineallthetime@gmail.com>",
+  "author": "@gaarf",
   "repository": {
     "type": "git",
     "url": "https://github.com/gaarf/grunt-boilerplate"
