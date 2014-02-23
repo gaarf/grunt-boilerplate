@@ -1,0 +1,9 @@
+.DS_Store
+*.pid
+nohup.out
+npm-debug.log
+node_modules/
+/var
+/public/bower_components
+/public/generated
+/etc/*secret*

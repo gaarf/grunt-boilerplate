@@ -1,0 +1,295 @@
+{
+
+
+
+  "jshint": {
+    "options": {
+      "jshintrc": "etc/jshintrc.json"
+    }
+  , "all": [
+      "Gruntfile.js"
+    , "app/**/*.js"
+    , "test/**/*.js"
+    ]
+  }
+
+, "mochaTest": {
+    "all": {
+      "options": {
+        "reporter": "spec"
+      }
+    , "src": ["test/*.js"]
+    }
+  , "client": {
+      "options": {
+        "reporter": "nyan"
+      }
+    , "src": ["test/client.js"]
+    }
+  }
+
+, "imagemin": {
+    "options": {
+      "pngquant": true
+    , "cache": false
+    }
+  , "all": {
+      "files": [{
+        "expand": true
+      , "cwd": "public/img/"
+      , "src": ["**/*.{png,jpg,gif}"]
+      , "dest": "public/img/"
+      }]
+    }
+  }
+
+
+, "clean": {
+    "generated": ["public/generated"]
+  , "tmp": ["var/tmp"]
+  }
+
+
+
+
+
+
+, "less": {
+    "options": {
+      "paths": [ 
+        "app/client/css"
+      , "public/bower_components"
+      ]
+    }
+  , "all": {
+      "files": [{
+        "expand": true
+      , "cwd": "app/client/css/"
+      , "src": ["*.less", "!_*"]
+      , "dest": "var/tmp/"
+      , "ext": ".w3c.css"
+      }]
+    }
+  }
+
+
+, "autoprefixer": {
+    "options": {}
+  , "all": {
+      "files": [{
+        "expand": true
+      , "cwd": "var/tmp/"
+      , "src": ["*.w3c.css"]
+      , "dest": "public/generated/"
+      , "ext": ".css"
+      }]
+    }
+  }
+
+
+, "cssmin": {
+    "options": {
+      "banner": "<%= uglify.options.banner %>"
+    , "keepSpecialComments": 0
+    , "report": "gzip"
+    }
+
+  , "all": {
+      "files": [{
+        "expand": true
+      , "cwd": "public/generated/"
+      , "src": ["*.css", "!*.min.css"]
+      , "dest": "public/generated/"
+      , "ext": ".min.css"
+      }]
+    }
+  }
+
+
+, "concat": {
+    "options": {
+      "separator": ";\n\n"
+    }
+  , "qunit": {
+      "files": [{
+        "expand": true
+      , "cwd": "test/qunit/"
+      , "src": [ "*.js" ]
+      , "dest": "var/tmp/"
+      , "ext": ".test.js"
+      }]
+    , "options": {
+        "banner": "var qunit = require('qunitjs'), module = qunit.module; with(qunit) {\n"
+      , "footer": "}\n"
+      }
+    }
+  }
+
+, "handlebars": {
+    "client": {
+      "options": {
+        "namespace": "JST"
+      , "node": true
+      }
+    , "files": [{
+        "src": [ "app/client/templates/**/*.hbs" ]
+      , "dest": "var/tmp/templates.js"
+      }]
+    }
+  }
+
+, "browserify": {
+    "options": {
+      "alias": [
+        "app/client/lib/jquery.shim.js:jquery"
+      , "node_modules/underscore/underscore.js:underscore"
+      , "app/client/lib/handlebars.shim.js:handlebars"
+      , "node_modules/express3-handlebars/node_modules/handlebars/runtime.js:handlebars-runtime"
+      , "public/bower_components/backbone/backbone.js:backbone"
+      ]
+    }
+  , "client": {
+      "files": [{
+        "expand": true
+      , "cwd": "app/client/"
+      , "src": [ "*.js" ]
+      , "dest": "var/tmp/"
+      , "ext": ".js"
+      }]
+
+    }
+  , "qunit": {
+      "files": [{
+        "src": [ "var/tmp/*.test.js" ]
+      , "dest": "public/generated/qunit-tests.js"
+      }]
+    , "options": {
+        "alias": [
+          "<%= browserify.options.alias %>"
+        , "public/bower_components/qunit/qunit/qunit.js:qunitjs"
+        ]
+      }
+    }
+  }
+
+
+
+, "uglify": {
+    "options": {
+      "banner": "/*! <%= pkg.name %>@<%= pkg.version %> / <%= grunt.template.today() %> */\n"
+    , "enclose": {}
+    }
+  , "dev": {
+      "options": {
+        "beautify": true
+      , "mangle": false
+      , "compress": false
+      , "preserveComments": "all"
+      }
+    , "files": [{
+        "expand": true
+      , "cwd": "var/tmp/"
+      , "src": [ "*.js", "!*.test.js" ]
+      , "dest": "public/generated/"
+      , "ext": ".js"
+      }]
+    }
+  , "prod": {
+      "options": {
+        "report": "gzip"
+      , "preserveComments": "some"
+      }
+    , "files": [{
+        "expand": true
+      , "cwd": "var/tmp/"
+      , "src": [ "*.js", "!*.test.js" ]
+      , "dest": "public/generated/"
+      , "ext": ".min.js"
+      }]
+    }
+  }
+
+
+
+, "watch": {
+    "options": {}
+
+  , "js": {
+      "files": [ "app/client/**/*.js" ]
+    , "tasks": [ "generate:js" ]
+    }
+
+  , "css": {
+      "files": [ "app/client/css/**/*" ]
+    , "tasks": [ "generate:css" ]
+    }
+
+  , "templates": {
+      "files": [ "app/client/templates/**/*.hbs" ]
+    , "tasks": [ "generate:hbs" ]
+    }
+
+  , "livereload": {
+      "files": [ 
+        "public/generated/*"
+      , "public/img/**"
+      , "app/server/**/*.hbs"
+      , "var/*"
+      ]
+    , "options": {
+        "livereload": true
+      }
+    }
+
+  , "qunit": {
+      "files": [ "test/qunit/*" ]
+    , "tasks": [ "generate:qunit" ]
+    }
+
+  , "test": {
+      "files": [ "test/*.js" ]
+    , "tasks": [ "test" ]
+    }
+
+  }
+
+
+, "nodemon": {
+    "options": {
+      "watch": [ "app/server" ]
+    , "ext": "js"
+    }
+  , "dev": {
+      "script": "server.js"
+    , "options": {
+        "env": {
+          "NODE_ENV": "development"
+        }
+      }
+    }
+  , "debug": {
+      "script": "server.js"
+    , "options": {
+        "env": {
+          "NODE_ENV": "debug"
+        }
+      , "nodeArgs": [ "--debug" ]          
+      }
+    }
+  }
+
+
+, "concurrent": {
+    "dev": {
+      "tasks": [ 
+        "nodemon:dev"
+      , "watch"
+      ]
+    , "options": {
+        "logConcurrentOutput": true
+      }
+    }
+  }
+
+
+}

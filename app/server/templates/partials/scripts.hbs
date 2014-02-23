@@ -1,0 +1,14 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/public/bower_components/jquery/dist/jquery.min.js"><\/script>');
+    window.console = window.console || { log: function() {} };
+    jQuery.noConflict()(function($){ $('html').removeClass('no-js');});
+</script>
+
+
+{{#each page.scripts}}
+    <script src="/public/generated/{{this}}{{#ifdev}}.js{{else}}.min.js{{/ifdev}}"></script>
+{{/each}}
+{{#ifdev}}
+    <script src="//localhost:35729/livereload.js"></script>
+{{/ifdev}}

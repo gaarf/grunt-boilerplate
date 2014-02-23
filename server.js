@@ -1,0 +1,1 @@
+require(__dirname + '/app/server/boot.js').up();
