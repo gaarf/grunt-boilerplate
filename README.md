@@ -4,7 +4,7 @@
 
 `npm install -g grunt-cli bower`
 
-`cd grunt-boilerplate && npm install`
+`cd kitchensink-boilerplate && npm install`
 
 ## Usage
 
@@ -21,6 +21,7 @@
 ### pass the tests
 
 `grunt test` and `npm test` do the same thing: run all tests.
+
 `grunt qunit` builds and runs the client-side tests only.
 
 ### run the server

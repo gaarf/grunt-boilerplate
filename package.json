@@ -1,18 +1,18 @@
 {
-  "name": "grunt-boilerplate",
+  "name": "kitchensink-boilerplate",
   "version": "0.0.1",
   "description": "Express + Grunt boilerplate",
   "main": "app/server/boot.js",
   "scripts": {
     "prepublish": "bower install",
     "test": "NODE_ENV=test node_modules/.bin/mocha --reporter spec --check-leaks",
-    "start": "nohup node server.js grunt-boilerplate &",
-    "stop": "pkill -fx \"node server.js grunt-boilerplate\" || true"
+    "start": "nohup node server.js kitchensink-boilerplate &",
+    "stop": "pkill -fx \"node server.js kitchensink-boilerplate\" || true"
   },
   "author": "@gaarf",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gaarf/grunt-boilerplate"
+    "url": "https://github.com/gaarf/kitchensink-boilerplate"
   },
   "private": true,
   "devDependencies": {

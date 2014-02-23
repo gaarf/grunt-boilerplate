@@ -1,5 +1,5 @@
 {
-  "name": "grunt-boilerplate",
+  "name": "kitchensink-boilerplate",
   "private": true,
   "ignore": [
     "**/.*",
