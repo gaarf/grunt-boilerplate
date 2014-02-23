@@ -103,7 +103,18 @@ describe('Handlebars Helpers', function(){
 
   });
 
+  describe('{{#mailtolink}}', function(){
 
+
+      it('does mangling', function(){
+        var email = 'spambot@protect.com'
+          , tpl = Handlebars.compile("{{#mailtolink '"+email+"'}}contact{{/mailtolink}}")();
+        expect(tpl).to.not.include('mailto:');
+        expect(tpl).to.not.include(email);
+        expect(tpl).to.include('contact');
+      });
+
+  });
 
 
 });
