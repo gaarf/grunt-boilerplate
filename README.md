@@ -14,7 +14,7 @@ Use all the JS goodies!
  * LiveReload for all the above
 
 Bundled client-side libs:
- * jQuery, duh
+ * jQuery
  * Normalize + Pure CSS
  * Backbone.js
  * Font-Awesome
@@ -48,4 +48,6 @@ Bundled client-side libs:
 
 `grunt dev` for the live reload magic.
 
-`NODE_ENV=production npm start` runs in the background using minified assets.
+`npm start` to run in the background, `npm stop` to cancel.
+
+`NODE_ENV=production node server.js --server.port=3001 --sessions.secret=foo` run in production mode, eg to try minified assets
