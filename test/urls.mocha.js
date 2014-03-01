@@ -8,7 +8,6 @@ var _ = require('underscore')
   , URLS = (function(){
 /*
 
-/
 /login
 /login/forgot
 /logout
