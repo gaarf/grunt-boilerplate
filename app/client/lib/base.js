@@ -5,16 +5,27 @@ var $ = require('jquery')
 
 Backbone.$ = $;
 
-function getJST(callback) {
+
+/**
+ * fetches client-side templates if needed
+ * @param  {Function} callback
+ */
+function getTpl(template, callback) {
+  if(_.isFunction(template)) {
+    return callback(template);
+  }
+  var complete = function() {
+    callback(window.JST[template]);
+  }
   if(window.JST) {
-    return callback();
+    return complete();
   }
   console.log('fetching JST...');
   $.ajax({
     url: '/public/generated/templates.js'
   , dataType: "script"
   , cache: true
-  , complete: callback
+  , complete: complete
   , error: function(xhr, status, err) {
       throw err;
     }
@@ -26,12 +37,25 @@ module.exports = {
   , $: $
   , Backbone: Backbone
   , Handlebars: Handlebars
+
   , View: Backbone.View.extend({
-      render: function(subs) {
+
+      subview: function(view) {
+        this._subviews = this._subviews || [];
+        this._subviews.push(view);
+        return view;
+      }
+
+      /**
+       * renders a view using the specified template
+       * @param  {Object} optional context to use in addition to the model
+       * @return {View}
+       */
+    , render: function(subs) {
         if(this.template) {
-          getJST(_.bind(function(){
-            var tpl = window.JST[this.template];
+          getTpl(this.template, _.bind(function(tpl){
             if(tpl) {
+              console.log(tpl);
               subs = subs || {};
               if(this.model) {
                 _.extend(subs, this.model.toJSON());
@@ -42,13 +66,16 @@ module.exports = {
               this.trigger('rendered');
             }
             else {
-              console.error('missing JST', this.template);
+              console.error('missing template', this.template);
             }
           }, this));
         }
         return this;
       }
 
+      /**
+       * remove all subviews
+       */
     , empty: function() {
         _.invoke(this._subviews || [], 'remove');
         this.$el.empty().removeClass();

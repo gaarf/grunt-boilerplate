@@ -29,6 +29,12 @@ module.exports = {
             })
             .render() // triggers fetching of client side templates
         }
+  
+      , 'click .flash-me-an-error': function(e) {
+          e.preventDefault();
+          flash.error('oh noes! this is an error flash message.')
+        }
+  
       }
     })
 

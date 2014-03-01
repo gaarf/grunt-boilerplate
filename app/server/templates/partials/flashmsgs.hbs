@@ -1,10 +1,8 @@
 <div id="flashmsgs">
-    <a href="#" class="dismiss"><i class="icon icon-dismiss"></i></a>
     <ul class="list-unstyled">
         {{#each flashMessages}}
             {{#each this}}
                 <li class="{{@key}}">
-                    <i class="icon"></i>
                     {{this}}
                 </li>
             {{/each}}

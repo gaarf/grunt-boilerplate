@@ -63,7 +63,32 @@ header {
     }
 }
 
+/* ------------------------------------------------------------------------- */
 
+#flashmsgs {
+    position: absolute;
+    z-index: 98;
+    top: 0;
+    right: 50%;
+    width: 400px;
+    margin-right:-200px;
+
+    li {
+        cursor: crosshair;
+        border: 5px solid green;
+        border-radius: 10px;
+
+        margin-top: 3px;
+        padding: 10px;
+        background-color: white;
+
+        &.error {
+            border-color: red;
+            color: red;
+        }
+
+    }
+}
 
 /* ------------------------------------------------------------------------- */
 

@@ -14,6 +14,14 @@ module.exports = {
 
     }
 
+  , '/flash': {
+
+        get: function (req, res) {
+            req.flash('info', 'hello world!');
+            res.redirect('/');
+        }
+
+    }
 
   , '/login': {
 
