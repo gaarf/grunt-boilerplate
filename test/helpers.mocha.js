@@ -53,19 +53,19 @@ describe('Handlebars Helpers', function(){
       it('by default increment = 1', function(){
         expect(
           Handlebars.compile('{{#for 0 2}}test{{/for}}')()
-        ).to.equal('testtesttest');
+        ).to.equal('test\ntest\ntest\n');
       });
 
       it('can specify increment', function(){
         expect(
           Handlebars.compile('{{#for 0 3 2}}test{{/for}}')()
-        ).to.equal('testtest');
+        ).to.equal('test\ntest\n');
       });
 
       it('subs and @index private var is present', function(){
         expect(
           Handlebars.compile('{{#for 0 2}}{{foo}}{{@index}}{{/for}}')({foo:'bar'})
-        ).to.equal('bar0bar1bar2');
+        ).to.equal('bar0\nbar1\nbar2\n');
       });
 
   });

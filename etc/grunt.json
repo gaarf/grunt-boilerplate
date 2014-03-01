@@ -14,17 +14,17 @@
   }
 
 , "mochaTest": {
-    "all": {
+    "server": {
       "options": {
         "reporter": "spec"
       }
-    , "src": ["test/*.js"]
+    , "src": ["test/*.mocha.js", "-test/client.mocha.js"]
     }
   , "client": {
       "options": {
         "reporter": "nyan"
       }
-    , "src": ["test/client.js"]
+    , "src": ["test/client.mocha.js"]
     }
   }
 
@@ -114,9 +114,9 @@
       "files": [{
         "expand": true
       , "cwd": "test/qunit/"
-      , "src": [ "*.js" ]
+      , "src": [ "*.qunit.js" ]
       , "dest": "var/tmp/"
-      , "ext": ".test.js"
+      , "ext": ".qunit-test.js"
       }]
     , "options": {
         "banner": "var qunit = require('qunitjs'), module = qunit.module; with(qunit) {\n"
@@ -160,7 +160,7 @@
     }
   , "qunit": {
       "files": [{
-        "src": [ "var/tmp/*.test.js" ]
+        "src": [ "var/tmp/*.qunit-test.js" ]
       , "dest": "public/generated/qunit-tests.js"
       }]
     , "options": {
@@ -242,7 +242,7 @@
     }
 
   , "qunit": {
-      "files": [ "test/qunit/*" ]
+      "files": [ "test/qunit/*.js" ]
     , "tasks": [ "generate:qunit" ]
     }
 
@@ -280,14 +280,14 @@
 
 
 , "concurrent": {
-    "dev": {
+    "options": {
+      "logConcurrentOutput": true
+    }
+  , "dev": {
       "tasks": [ 
         "nodemon:dev"
       , "watch"
       ]
-    , "options": {
-        "logConcurrentOutput": true
-      }
     }
   }
 

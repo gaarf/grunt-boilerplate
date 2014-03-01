@@ -1,30 +1,27 @@
-var _ = require('underscore');
-
-var todo = function (req, res) {
-    res.render('todo');
-};
+var middleware = require('../lib/middleware.js')
 
 module.exports = {
 
     '/': {
 
-        all: function (req, res) {
-            res.locals('page', _.extend(res.locals.page, {
-                bodyClass: 'homepage'
-            }));
-            res.render('home');
-        }
+        all: [
+          middleware.base
+        , function (req, res) {
+              res.locals.page.bodyClass = 'homepage';
+              res.render('home');
+          }
+        ]
 
     }
 
 
   , '/login': {
 
-        get: todo
+        get: middleware.doTodo
 
       , '/forgot': {
 
-            get: todo
+            get: middleware.doTodo
 
         }
 
@@ -32,13 +29,13 @@ module.exports = {
 
   , '/logout': {
 
-        get: todo
+        get: middleware.doTodo
 
     }
 
   , '/signup': {
 
-        get: todo
+        get: middleware.doTodo
 
     }
 

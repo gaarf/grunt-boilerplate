@@ -33,7 +33,7 @@ describe('Markup', function(){
                         }
 
                         tidy(
-                            data
+                            data.replace(/{{[#\/][^}]+}}/g, '') // remove block mustaches, keep their content
                           , { showWarnings: true, quiet: true }
                           , function(result) {
                                 var errors = _.chain(result.split("\n")).compact().filter(function(msg) {

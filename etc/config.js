@@ -1,14 +1,22 @@
 var nconf = require('nconf')
+  , _ = require('underscore')
   , pkg = require(__dirname + "/../package.json")
-  , NODE_ENV = process.env.NODE_ENV
-  , IS_PROD = NODE_ENV==='production';
+  , env = process.env.NODE_ENV;
 
+/**
+ * when running tests in OSX, we actually want to use dev settings
+ */
+if(!env || (env==='test' && process.platform==='darwin')) {
+  env = 'development';
+}
+
+var IS_DEV = (env==='development');
 
 module.exports = nconf
 
   .overrides({
     store: {
-      "pkg": pkg
+      "pkg": _.omit(pkg, 'main', 'scripts', 'dependencies', 'devDependencies')
     }
   })
 
@@ -16,8 +24,13 @@ module.exports = nconf
 
   // .env({separator:'__'})
 
-  .file('secrets-env', {
-    file: __dirname + '/_secrets-' + NODE_ENV + '.ini'
+  .file('config', {
+    file: __dirname + '/config.ini'
+  , format: nconf.formats.ini
+  })
+
+  .file('config-env', {
+    file: __dirname + '/config-' + env + '.ini'
   , format: nconf.formats.ini
   })
 
@@ -26,8 +39,8 @@ module.exports = nconf
   , format: nconf.formats.ini
   })
 
-  .file('config', {
-    file: __dirname + '/config.ini'
+  .file('secrets-env', {
+    file: __dirname + '/_secrets-' + env + '.ini'
   , format: nconf.formats.ini
   })
 
@@ -35,11 +48,11 @@ module.exports = nconf
     store: {
 
       "server": {
-        "port": IS_PROD ? 80 : 3000
+        "port": IS_DEV ? 3000 : 80
       }
 
     , "sessions": {
-        "secret": !IS_PROD && 's3cr3t'
+        "secret": IS_DEV && 's3cr3t'
       }
 
     , "title": pkg.name

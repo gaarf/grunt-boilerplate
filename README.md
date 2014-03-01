@@ -5,6 +5,8 @@ Use all the JS goodies!
  * Grunt
  * Bower
  * Handlebars client/server
+ * Knex migrations
+ * Bookshelf.js ORM
  * Browserify
  * LESS + Autoprefixer
  * UglifyJS, CSSmin, imagemin
@@ -12,6 +14,7 @@ Use all the JS goodies!
  * QUnit via PhantomJS
  * JShint + HTMLtidy
  * LiveReload for all the above
+
 
 Bundled client-side libs:
  * jQuery
@@ -22,9 +25,17 @@ Bundled client-side libs:
 
 ### dependencies
 
+`brew install node mysql redis`
+
 `npm install -g grunt-cli bower`
 
 `cd kitchensink-boilerplate && npm install`
+
+### create database
+
+`mysql.server start && mysql -uroot -e "CREATE DATABASE kitchensink"`
+
+There is no login, but there are tests for the stub User model.
 
 ## Usage
 
@@ -51,3 +62,6 @@ Bundled client-side libs:
 `npm start` to run in the background, `npm stop` to cancel.
 
 `NODE_ENV=production node server.js --server.port=3001 --sessions.secret=foo` run in production mode, eg to try minified assets
+
+
+

@@ -13,7 +13,7 @@ module.exports = function (grunt) {
 
   ////////////////////////////////////////////////////////////////////////////////
 
-  grunt.registerTask('test', 'same as `npm test`: runs mocha test harness', function(){
+  grunt.registerTask('test', 'Same as `npm test`: runs mocha test harness.', function(){
     grunt.util.spawn({
           cmd: 'npm'
         , args: ['test']
@@ -25,7 +25,24 @@ module.exports = function (grunt) {
     );
   });
 
-  // grunt.registerTask('deploy', function(t) {
+  grunt.registerTask('migrate', 'Knex migrations', function(command, name) {
+    var args = ['--config', 'etc/knexmigrate.js', 'migrate:'+command];
+    if(command==='make') {
+      args.push(name);
+    }
+    grunt.util.spawn({
+          cmd: 'node_modules/.bin/knex'
+        , args: args
+        , opts: {
+            stdio: 'inherit'
+          }
+        }
+      , this.async()
+    );
+  });
+
+
+  // grunt.registerTask('deploy', 'Delegates to `etc/deploy.sh` script.', function(t) {
   //   grunt.util.spawn({
   //         cmd: 'etc/deploy.sh'
   //       , args: [t || 'staging']
@@ -37,9 +54,41 @@ module.exports = function (grunt) {
   //   );
   // });
 
-  // grunt.registerTask('stage', [ "build:prod", "imagemin", "deploy:staging"]);
+  grunt.registerTask('redis', "Ensure Redis is running.", function() {
+    var async = this.async();
+    grunt.util.spawn({
+          cmd: 'redis-cli'
+        , args: ['ping']
+        }
+      , function(err) {
+          if(!err) {
+            return async();
+          }
+          grunt.util.spawn({
+                cmd: 'redis-server'
+              , args: [ '/usr/local/etc/redis.conf', '--daemonize yes' ]
+              }
+            , async
+          );
+        }
+    );
+  });
 
-  grunt.registerTask('dev', [ "build:dev", "concurrent:dev"]);
+
+  grunt.registerTask('mysql', "Ensure MySQL is running.", function() {
+    grunt.util.spawn({
+          cmd: 'mysql.server'
+        , args: ["start"]
+        }
+      , this.async()
+    );
+  });
+
+  grunt.registerTask('db', [ "mysql", "redis", "migrate:latest" ]);
+
+  grunt.registerTask('dev', [ "db", "build:dev", "concurrent:dev"]);
+
+  grunt.registerTask('stage', [ "build:prod", "deploy:staging"]);
 
   grunt.registerTask('generate', function(s, t, o) {
     t = t || 'dev';
@@ -73,13 +122,13 @@ module.exports = function (grunt) {
     grunt.task.run([ "clean:tmp" ]);
   });
 
-  grunt.registerTask('build', function(t) {
+  grunt.registerTask('build', "Build all static assets.", function(t) {
     t = t || 'dev';
     grunt.task.run([ "clean", "generate:qunit", "generate:hbs:"+t, "generate:css:"+t, "generate:js:"+t ]);
   });
 
-  grunt.registerTask('qunit', [ "generate:qunit", "generate:hbs", "mochaTest:client" ]);
+  grunt.registerTask('qunit', [ "db", "generate:qunit", "generate:hbs", "mochaTest:client" ]);
 
-  grunt.registerTask('default', [ "jshint", "build", "test" ]);
+  grunt.registerTask('default', [ "db", "jshint", "build", "test" ]);
 
 }

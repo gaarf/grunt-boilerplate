@@ -1,8 +1,19 @@
+/**
+ * boot-up the express server
+ */
+
 var _ROOT = __dirname + '/../..'
   , config = require(_ROOT + '/etc/config.js')
+
   , controllers = require(__dirname + '/controllers')
+  , DB = require(__dirname + '/models').call(config)
 
   , express = require('express')
+
+  , RedisStore = require('connect-redis')(express)
+  , Bookshelf = require('bookshelf')
+  , passport = require(__dirname + '/lib/auth.js').passport
+
   , app = express()
   , hbs = require('express3-handlebars').create({
         extname: '.hbs'
@@ -12,6 +23,7 @@ var _ROOT = __dirname + '/../..'
       , partialsDir: __dirname + '/templates/partials'
     });
 
+
 app.engine('.hbs', hbs.engine);
 
 app.set('view engine', '.hbs');
@@ -20,12 +32,13 @@ app.set('views', __dirname + '/templates');
 app.set('pkg', config.get('pkg')); // {{settings.pkg}}
 app.set('title', config.get('title')); // {{settings.title}}
 
+
 app.configure('development', function(){
     hbs.handlebars.logger.level = 0;
     app.use(express.logger('dev'));
 });
 
-app.configure('production', function(){
+app.configure('staging', 'production', function(){
     app.use(express.logger());
     app.use(express.compress());
 });
@@ -33,14 +46,27 @@ app.configure('production', function(){
 app.use(express.favicon());
 
 app.use('/public/fonts', controllers.restrictFonts);
-app.use('/public', express.static(_ROOT + '/public'));
+app.use('/public', express.static(_ROOT + '/public', { maxAge: 24 * 60 * 60 * 1000 }));
 
 app.use(express.query());
 app.use(express.urlencoded());
 app.use(express.json());
-app.use(express.methodOverride());
 app.use(express.cookieParser());
-app.use(express.session({secret: config.get('sessions:secret')}));
+
+
+app.use(express.session({
+  secret: config.get('sessions:secret')
+// , store: (new RedisStore(config.get('redis'))).on('disconnect', function() {
+//     throw new Error('Redis disconnected!');
+//   })
+}));
+
+
+
+
+app.use(require('connect-flash')());
+
+app.use(express.methodOverride());
 app.use(express.csrf());
 
 controllers.index(app);
@@ -50,7 +76,7 @@ app.configure('development', function(){
     app.use(express.errorHandler());
 });
 
-app.configure('test', 'production', function(){
+app.configure('test', 'staging', 'production', function(){
     app.use(controllers.errorHandler);
 });
 
@@ -79,7 +105,7 @@ function up() {
 
       server = app.listen(port, function() {
           console.log(
-              "\n[%s] v%s listening on port %d in %s mode\n"
+              "\n\x1B[7m %s \x1B[27m v%s Server listening on port %d in \x1B[1m%s mode\x1B[22m\n"
             , name
             , config.get('pkg:version')
             , port
@@ -102,5 +128,7 @@ if(!module.parent) {
 module.exports = {
     up: up
   , app: app
+  , config: config
+  , DB: DB
 };
 

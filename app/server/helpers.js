@@ -6,6 +6,10 @@ var Handlebars = require('express3-handlebars').create().handlebars
 module.exports = {
 
 
+    /**
+     * {{debug [optionalValue]}} prints context in the log
+     * @param  {*} optionalValue to specifically log
+     */
     debug: function(optionalValue) {
       console.log("Current Context");
       console.log("====================");
@@ -18,6 +22,11 @@ module.exports = {
       }
     }
 
+
+
+    /**
+     * {{#ifdev}} show the block in development environment
+     */
   , ifdev: function(options) {
       var env = process.env.NODE_ENV;
       if(!env || env === 'development') {
@@ -28,6 +37,13 @@ module.exports = {
       }
     }
 
+
+
+
+    /**
+     * {{#mailtoling [email]}} prints out a mailto: link with spam-bot countermeasures
+     * @param  {String} email address to use instead of the default
+     */
   , mailtolink: function(email, options) {
       if(!options) {
         options = email;
@@ -45,6 +61,14 @@ module.exports = {
       return out;
     }
 
+
+
+
+    /**
+     * {{#repeat qty [separator]}} repeat the block
+     * @param  {[type]} qty number of repeats
+     * @param  {[type]} separator default to newline
+     */
   , repeat: function(qty, separator, options) {
       if(typeof qty != 'number' || qty < 1) {
         return '';
@@ -64,25 +88,42 @@ module.exports = {
       return result.slice(0, -separator.length);
     }
 
+
+
+    /**
+     * {{#for from to [incr]}} for loop, with @index private var
+     * @param  {Number} from
+     * @param  {Number} to
+     * @param  {Number} incr defaults to 1
+     */
   , "for": function(from, to, incr, options) {
+      var accum = '', data;
       if(!options) {
         options = incr;
         incr = 1;
       }
-      var accum = ''
-        , data = Handlebars.createFrame(options.data || {});
+      data = Handlebars.createFrame(options.data || {});
       for(var i = from; i <= to; i += incr) {
         data.index = i;
-        accum += options.fn(this, {data: data});        
+        accum += options.fn(this, {data: data}) + "\n";        
       }
       return accum;
     }
 
+
+
+
+    /**
+     * {add x y z} sums up the arguments
+     * @param {Number} * 
+     * @return {Number}
+     */
   , "add": function() {
       return _.chain(arguments).initial().reduce(function(memo, num) {
         return memo + parseInt(num, 10);
       }, 0).value().toString();
     }
+
 
 
     // , block: function(name){
