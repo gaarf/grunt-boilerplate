@@ -8,6 +8,7 @@ var _ = require('underscore')
   , URLS = (function(){
 /*
 
+/
 /login
 /login/forgot
 /logout
@@ -24,6 +25,20 @@ var _ = require('underscore')
 
 
 describe('URLs', function() {
+
+  it('homepage', function(done){
+
+    chai.request(app)
+      .get('/')
+      .res(function (res) {
+
+        expect(res).to.have.status(200);
+        expect(res).to.be.html;
+
+        done();
+      });
+
+  });
 
   for (var i = 0; i < URLS.length; i++) {
     var s = URLS[i].split(" => ");
@@ -53,5 +68,88 @@ describe('URLs', function() {
 
 });
 
+
+describe('errors', function(){
+
+  var calls = {
+
+      '/error': function() {
+          expect(this).to.have.status(404);
+        }
+
+    , '/error/404': function() {
+          expect(this).to.have.status(404);
+        }
+
+    , '/error/403': function() {
+          expect(this).to.have.status(403);
+        }
+
+    , '/error/500': function() {
+          expect(this).to.have.status(500);
+          expect(this.text).to.include('keyboard cat!');
+        }
+
+  };
+
+  function doCall(done){
+    var that = this;
+    chai.request(app)
+      .get(that.url)
+      .req(function (req) {
+          req.set('accept', that.accept);
+        })
+      .res(function(res){
+        calls[that.url].call(res);
+        that.cb.call(res);
+        done();
+      });
+  }
+
+  describe('as text', function() {
+
+    for (var k in calls) {
+      it(k, doCall.bind({
+        url: k
+      , accept: 'text/plain'
+      , cb: function() {
+          expect(this).to.be.text;
+        }
+      }));
+    }
+
+  });
+
+  describe('as JSON', function() {
+
+    for (var k in calls) {
+      it(k, doCall.bind({
+        url: k
+      , accept: 'application/json'
+      , cb: function() {
+          expect(this).to.be.json;
+        }
+      }));
+    }
+
+  });
+
+
+  describe('as html', function() {
+
+    for (var k in calls) {
+      it(k, doCall.bind({
+        url: k
+      , accept: 'text/html'
+      , cb: function() {
+          expect(this).to.be.html;
+        }
+      }));
+    }
+
+
+  });
+
+});
 
 
