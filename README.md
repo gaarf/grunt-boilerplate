@@ -7,6 +7,7 @@ Use all the JS goodies!
  * Handlebars client/server
  * Knex migrations
  * Bookshelf.js ORM
+ * Passport.js Auth
  * Browserify
  * LESS + Autoprefixer
  * UglifyJS, CSSmin, imagemin
