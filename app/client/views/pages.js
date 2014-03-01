@@ -1,6 +1,5 @@
 var base = require('../lib/base')
-  , $ = base.$
-  , _ = base._
+  , flash = require('../lib/flashmsgs')
   , Page = base.View.extend({
         el: 'main'
     });

@@ -1,5 +1,4 @@
-var base = require('../lib/base')
-  , Backbone = base.Backbone
+var base = require('./base')
   , $ = base.$;
 
 
@@ -7,24 +6,25 @@ var base = require('../lib/base')
  * view for the flash messages
  */
 
-module.exports = base.View.extend({
+module.exports = new (base.View.extend({
     el: '#flashmsgs'
 
   , initialize: function() {
       this.$list = this.$('ul');
+      console.log('initialize', this);
     }
 
   , info: function(msg) {
       console.info(msg);
-      this.appendMessage('info', msg);
+      this.append('info', msg);
     }
 
   , error: function(msg) {
       console.error(msg);
-      this.appendMessage('error', msg);
+      this.append('error', msg);
     }
 
-  , appendMessage: function(className, msg) {
+  , append: function(className, msg) {
       var item = this.subview(new MessageItem());
       item.$el
         .addClass(msg ? className : 'info')
@@ -44,7 +44,7 @@ module.exports = base.View.extend({
 
 
     }
-});
+}));
 
 
 var MessageItem = base.View.extend({

@@ -55,7 +55,6 @@ module.exports = {
         if(this.template) {
           getTpl(this.template, _.bind(function(tpl){
             if(tpl) {
-              console.log(tpl);
               subs = subs || {};
               if(this.model) {
                 _.extend(subs, this.model.toJSON());
