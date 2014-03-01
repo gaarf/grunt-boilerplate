@@ -42,36 +42,25 @@ module.exports = function (grunt) {
   });
 
 
-  // grunt.registerTask('deploy', 'Delegates to `etc/deploy.sh` script.', function(t) {
-  //   grunt.util.spawn({
-  //         cmd: 'etc/deploy.sh'
-  //       , args: [t || 'staging']
-  //       , opts: {
-  //           stdio: 'inherit'
-  //         }
-  //       }
-  //     , this.async()
-  //   );
-  // });
-
   grunt.registerTask('redis', "Ensure Redis is running.", function() {
-    var async = this.async();
-    grunt.util.spawn({
-          cmd: 'redis-cli'
-        , args: ['ping']
-        }
-      , function(err) {
-          if(!err) {
-            return async();
-          }
-          grunt.util.spawn({
-                cmd: 'redis-server'
-              , args: [ '/usr/local/etc/redis.conf', '--daemonize yes' ]
-              }
-            , async
-          );
-        }
-    );
+    grunt.log.writeln("Redis is commented out!");
+    // var async = this.async();
+    // grunt.util.spawn({
+    //       cmd: 'redis-cli'
+    //     , args: ['ping']
+    //     }
+    //   , function(err) {
+    //       if(!err) {
+    //         return async();
+    //       }
+    //       grunt.util.spawn({
+    //             cmd: 'redis-server'
+    //           , args: [ '/usr/local/etc/redis.conf', '--daemonize yes' ]
+    //           }
+    //         , async
+    //       );
+    //     }
+    // );
   });
 
 
@@ -84,7 +73,7 @@ module.exports = function (grunt) {
     );
   });
 
-  grunt.registerTask('db', [ "mysql", "redis", "migrate:latest" ]);
+  grunt.registerTask('db', [ "redis", "mysql", "migrate:latest" ]);
 
   grunt.registerTask('dev', [ "db", "build:dev", "concurrent:dev"]);
 

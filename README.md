@@ -25,7 +25,7 @@ Bundled client-side libs:
 
 ### dependencies
 
-`brew install node mysql redis`
+`brew install node mysql`
 
 `npm install -g grunt-cli bower`
 
