@@ -17,6 +17,29 @@ describe('User model', function(){
     expect(model.get('updated_at')).to.be.undefined;
   });
 
+  describe('validation', function(){
+
+    it('email and first_name must be present', function(done){
+      var dude = new User();
+      dude.save().catch(function(err){
+        expect(err).to.be.an.instanceof(Error);
+        expect(err.errors.email.errors).to.not.be.empty;
+        expect(err.errors.first_name.errors).to.not.be.empty;
+        done();
+      });
+    });
+
+    it('email must be valid', function(done){
+      var dude = new User();
+      dude.set('email', 'invalid@email');
+      dude.save().catch(function(err){
+        expect(err).to.be.an.instanceof(Error);
+        expect(err.errors.email.errors).to.not.be.empty;
+        done();
+      });
+    });
+
+  });
 
   describe('saved instance', function(){
 

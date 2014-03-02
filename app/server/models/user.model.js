@@ -22,7 +22,7 @@ var User = DB.ValidatingModel.extend({
 , hidden: ['password']
 
 , validations: {
-    email: ['required', 'email']
+    email: ['required','email']
   , first_name: ['required']
   }
 
