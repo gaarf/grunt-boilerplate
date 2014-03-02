@@ -1,4 +1,5 @@
 var Bookshelf = require('bookshelf')
+  , Checkit = require('checkit')
   , fs = require('fs');
 
 /**
@@ -14,13 +15,29 @@ module.exports = function() {
     return Bookshelf.DB;
   }
 
-  Bookshelf.DB = Bookshelf.initialize({
+  var DB = Bookshelf.initialize({
 
     client: 'mysql'
 
   , connection: this.get('mysql') // nconf
 
   }).plugin(['registry', 'virtuals', 'visibility']);
+
+
+
+  DB.ValidatingModel = DB.Model.extend({
+    constructor: function() {
+      DB.Model.apply(this, arguments);
+      this.on('saving', this.validate, this);
+    }
+  , validations: {}
+  , validate: function() { 
+      return new Checkit(this.validations).run(this.toJSON());
+    }
+  });
+
+
+  Bookshelf.DB = DB;
 
 
   fs.readdirSync(__dirname).forEach(function (file) {

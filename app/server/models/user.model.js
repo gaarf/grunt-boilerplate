@@ -1,4 +1,4 @@
-var Bookshelf = require('bookshelf').DB;
+var DB = require('bookshelf').DB;
 
 
 /**
@@ -13,13 +13,18 @@ var Bookshelf = require('bookshelf').DB;
  * @field last_name
  */
 
-var User = Bookshelf.Model.extend({
+var User = DB.ValidatingModel.extend({
 
   tableName: 'users'
 
 , hasTimestamps: true
 
 , hidden: ['password']
+
+, validations: {
+    email: ['required', 'email']
+  , first_name: ['required']
+  }
 
 , virtuals: {
 
@@ -28,12 +33,13 @@ var User = Bookshelf.Model.extend({
      */
     "full_name": {
       get: function () {
-          return this.get('first_name') + ' ' + this.get('last_name');
+        var last = this.get('last_name');
+        return this.get('first_name') + (last ? ' ' + last : '');
       }
     , set: function(value) {
-          value = value.split(' ');
-          this.set('first_name', value[0]);
-          this.set('last_name', value[1]);
+        value = value.split(' ');
+        this.set('first_name', value[0]);
+        this.set('last_name', value[1]);
       }
     }
 
@@ -45,4 +51,4 @@ var User = Bookshelf.Model.extend({
 
 
 
-module.exports = Bookshelf.model('User', User);
+module.exports = DB.model('User', User);
