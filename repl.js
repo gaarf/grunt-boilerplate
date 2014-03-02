@@ -12,6 +12,10 @@ console.log(
 
 var context = repl.start("\n▶ ").context;
 
+for (var k in boot.DB._models) {
+  context[k] = boot.DB.model(k);
+};
+
 context.boot = boot;
 
 context.logargs = function() { console.log(arguments) };

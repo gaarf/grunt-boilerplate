@@ -18,8 +18,6 @@ module.exports = function() {
 
     client: 'mysql'
 
-  , debug: process.env.NODE_ENV === 'development'
-
   , connection: this.get('mysql') // nconf
 
   }).plugin(['registry', 'virtuals', 'visibility']);

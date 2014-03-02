@@ -1,20 +1,16 @@
 /**
- * boot-up the express server
+ * boot the app!
  */
 
 var _ROOT = __dirname + '/../..'
   , config = require(_ROOT + '/etc/config.js')
 
+  , express = require('express')
+  , app = express()
+
   , controllers = require(__dirname + '/controllers')
   , DB = require(__dirname + '/models').call(config)
 
-  , express = require('express')
-
-  , RedisStore = require('connect-redis')(express)
-  , Bookshelf = require('bookshelf')
-  , passport = require(__dirname + '/lib/auth.js').passport
-
-  , app = express()
   , hbs = require('express3-handlebars').create({
         extname: '.hbs'
       , defaultLayout: 'default'
@@ -24,15 +20,24 @@ var _ROOT = __dirname + '/../..'
     });
 
 
+/**
+ * Handlebars templating
+ */
 app.engine('.hbs', hbs.engine);
-
 app.set('view engine', '.hbs');
 app.set('views', __dirname + '/templates');
 
+
+/**
+ * global app settings
+ */
 app.set('pkg', config.get('pkg')); // {{settings.pkg}}
 app.set('title', config.get('title')); // {{settings.title}}
 
 
+/**
+ * start building the middleware stack
+ */
 app.configure('development', function(){
     hbs.handlebars.logger.level = 0;
     app.use(express.logger('dev'));
@@ -43,17 +48,28 @@ app.configure('staging', 'production', function(){
     app.use(express.compress());
 });
 
+
+/**
+ * static assets
+ */
 app.use(express.favicon());
-
 app.use('/public/fonts', controllers.restrictFonts);
-app.use('/public', express.static(_ROOT + '/public', { maxAge: 24 * 60 * 60 * 1000 }));
+app.use('/public', express.static(_ROOT + '/public', { maxAge: 60 * 60 * 1000 }));
 
+
+/**
+ * request parsing
+ */
 app.use(express.query());
 app.use(express.urlencoded());
 app.use(express.json());
 app.use(express.cookieParser());
 
 
+/**
+ * sessions
+ */
+var RedisStore = require('connect-redis')(express);
 app.use(express.session({
   secret: config.get('sessions:secret')
 // , store: (new RedisStore(config.get('redis'))).on('disconnect', function() {
@@ -61,17 +77,24 @@ app.use(express.session({
 //   })
 }));
 
-
-
-
+/**
+ * flash messages & more middleware
+ */
 app.use(require('connect-flash')());
-
 app.use(express.methodOverride());
 app.use(express.csrf());
 
+
+/**
+ * the meat of the app routing
+ */
 controllers.index(app);
 app.use(app.router);
 
+
+/**
+ * finally, error handling
+ */
 app.configure('development', function(){
     app.use(express.errorHandler());
 });
@@ -88,8 +111,13 @@ app.use(function(req, res, next){
 
 
 
+
 var server;
 
+/**
+ * a function to actually start the HTTP server
+ * @return {net.Server}
+ */
 function up() {
     if(!server) {
 
@@ -129,6 +157,7 @@ module.exports = {
     up: up
   , app: app
   , config: config
+  , handlebars: hbs.handlebars
   , DB: DB
 };
 
