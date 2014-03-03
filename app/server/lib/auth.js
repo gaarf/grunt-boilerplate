@@ -1,28 +1,40 @@
 var passport = require('passport')
   , LocalStrategy = require('passport-local').Strategy
-  , User = require('bookshelf').DB.model('User');
+  , User = require('bookshelf').DB.model('User')
+  , Promise = require('bluebird');
 
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-
-    done(null, false, { message: 'LocalStrategy not configured.' });
-
-    // User.findOne({ username: username }, function (err, user) {
-
-    //   if (err) { 
-    //     return done(err);
-    //   }
-    //   if (!user) {
-    //     return done(null, false, { message: 'Incorrect username.' });
-    //   }
-    //   if (!user.validPassword(password)) {
-    //     return done(null, false, { message: 'Incorrect password.' });
-    //   }
-    //   return done(null, user);
-
-    // });
-
+passport.use(new LocalStrategy({
+    usernameField: 'email'
+  }
+, function(email, password, done) {
+    User
+      .forge({email:email})
+      .fetch()
+      .then(
+        function(user) {
+          if(!user) {
+            return Promise.reject('Unknown account.');
+          }
+          return user.checkPassword(password).bind(user);
+        }
+      )
+      .then(
+        function(valid) {
+          if(!valid) {
+            return Promise.reject('Incorrect password.');
+          }
+          return Promise.resolve(this);
+        }
+      )
+      .done(
+        function(user) {
+          done(null, user); // passwords match!
+        }
+      , function(message) {
+          done(null, false, { message: message });
+        }
+      )
   }
 ));
 
@@ -36,5 +48,7 @@ passport.deserializeUser(function(id, done) {
 
 
 module.exports = {
+
   passport: passport
+
 };

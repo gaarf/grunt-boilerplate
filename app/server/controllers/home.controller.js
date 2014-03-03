@@ -1,4 +1,4 @@
-var middleware = require('../lib/middleware.js')
+var middleware = require('../lib/middleware.js');
 
 module.exports = {
 
@@ -22,31 +22,5 @@ module.exports = {
         }
 
     }
-
-  , '/login': {
-
-        get: middleware.doTodo
-
-      , '/forgot': {
-
-            get: middleware.doTodo
-
-        }
-
-    }
-
-  , '/logout': {
-
-        get: middleware.doTodo
-
-    }
-
-  , '/signup': {
-
-        get: middleware.doTodo
-
-    }
-
-
 
 };
