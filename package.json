@@ -54,7 +54,6 @@
     "bookshelf": "~0.6.4",
     "checkit": "~0.2.0",
     "mysql": "~2.1.0",
-    "mashery": "~0.1.0",
     "passport": "~0.2.0",
     "passport-local": "~0.1.6",
     "bcrypt": "~0.7.7"
