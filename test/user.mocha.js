@@ -17,6 +17,43 @@ describe('User model', function(){
     expect(model.get('updated_at')).to.be.undefined;
   });
 
+
+  describe('password', function(){
+
+    it('setPassword is thenable', function(done){
+      var dude = new User()
+        , pwd = 'foo';
+      dude.setPassword(pwd).then(function() {
+        expect(dude.get('password')).to.be.ok.and.not.equal(pwd);
+        done();
+      });
+    });
+
+    it('checkPassword is thenable', function(done){
+      var dude = new User()
+        , pwd = 'foo';
+      dude.setPassword(pwd).then(function() {
+        dude.checkPassword('oops').then(function(result1) {
+          expect(result1).to.be.false;
+          dude.checkPassword(pwd).then(function(result2) {
+            expect(result2).to.be.true;
+            done();
+          });
+        });
+      });
+    });
+
+    it('set("password") hashes immediately', function(done){
+      var dude = new User()
+        , pwd = 'bar';
+      dude.set('password', pwd);
+      expect(dude.get('password')).to.be.ok.and.not.equal(pwd);
+      setTimeout(done, 1000);
+    });
+
+  });
+
+
   describe('validation', function(){
 
     it('email and first_name must be present', function(done){
@@ -41,15 +78,18 @@ describe('User model', function(){
 
   });
 
+
   describe('saved instance', function(){
 
     var email = Date.now()+'@test.com'
-      , bob = new User({email: email, password: 'foo'});
+      , bob = new User({email: email});
 
 
     before(function(done) {
       bob.set('full_name','bob smith');
-      bob.save().exec(done);
+      bob.setPassword('foo').then(function() {
+        bob.save().exec(done);
+      });
     });
 
 

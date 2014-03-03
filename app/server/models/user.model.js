@@ -1,5 +1,7 @@
-var DB = require('bookshelf').DB;
-
+var DB = require('bookshelf').DB
+  , Promise = require('bluebird')
+  , bcrypt = Promise.promisifyAll(require('bcrypt'))
+  , SALT_ROUNDS = 7;
 
 /**
  * User
@@ -26,6 +28,31 @@ var User = DB.ValidatingModel.extend({
   , first_name: ['required']
   }
 
+, initialize: function() {
+    this.on('change', function(model, options) {
+      var pwd = model.changed.password;
+      if(pwd) {
+        try {
+          bcrypt.getRounds(pwd); // throws if pwd is not hashed
+        }
+        catch(e) {
+          model.set('password', bcrypt.hashSync(pwd, SALT_ROUNDS));
+        }
+      }
+    });
+  }
+
+
+, setPassword: function(pwd) {
+    return bcrypt.hashAsync(pwd, SALT_ROUNDS).then((function(hash) {
+      return this.set('password', hash);
+    }).bind(this));
+  }
+
+, checkPassword: function(pwd) {
+    return bcrypt.compareAsync(pwd, this.get('password'));
+  }
+
 , virtuals: {
 
     /**
@@ -34,7 +61,7 @@ var User = DB.ValidatingModel.extend({
     "full_name": {
       get: function () {
         var last = this.get('last_name');
-        return this.get('first_name') + (last ? ' ' + last : '');
+        return this.get('first_name') + (last ? ' '+last : '');
       }
     , set: function(value) {
         value = value.split(' ');

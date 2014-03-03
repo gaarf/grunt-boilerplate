@@ -49,11 +49,14 @@
     "nconf": "~0.6.9",
     "connect-redis": "~1.4.7",
     "connect-flash": "~0.1.1",
+    "bluebird": "~1.0.7",
     "knex": "~0.5.7",
     "bookshelf": "~0.6.4",
+    "checkit": "~0.2.0",
     "mysql": "~2.1.0",
+    "mashery": "~0.1.0",
     "passport": "~0.2.0",
     "passport-local": "~0.1.6",
-    "checkit": "~0.2.0"
+    "bcrypt": "~0.7.7"
   }
 }
