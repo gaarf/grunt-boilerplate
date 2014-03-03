@@ -44,9 +44,9 @@ var User = DB.ValidatingModel.extend({
 
 
 , setPassword: function(pwd) {
-    return bcrypt.hashAsync(pwd, SALT_ROUNDS).then((function(hash) {
-      return this.set('password', hash);
-    }).bind(this));
+    return bcrypt.hashAsync(pwd, SALT_ROUNDS).bind(this).then(function(hash) {
+      this.set('password', hash);
+    });
   }
 
 , checkPassword: function(pwd) {
