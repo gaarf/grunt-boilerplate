@@ -37,7 +37,7 @@ function SubviewContainer(self) {
   this.self = self;
   return this;
 }
-_.extend(SubviewContainer.prototype, {
+_.extend(SubviewContainer.prototype, Backbone.Events, {
   clear: function(){
     _.invoke(this.views, 'remove');
     this.views = [];
@@ -49,12 +49,11 @@ _.extend(SubviewContainer.prototype, {
     }
     view._sub.parent = this.self;
     this.views.push(view);
-    var that = this;
-    view.on('all', function() {
-      that.trigger.apply(that, _(arguments).push(this));
+    this.listenTo(view, 'all', function(){
+      this.trigger.apply(this, _(arguments).push(view));
     });
   }
-}, Backbone.Events)
+})
 
 
 
