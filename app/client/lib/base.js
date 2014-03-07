@@ -32,45 +32,46 @@ function getTpl(template, callback) {
   });
 }
 
-function SubviewContainer() {
+function SubviewContainer(self) {
   this.views = [];
+  this.self = self;
   return this;
 }
-_.extend(SubviewContainer.prototype, Backbone.Events)
+_.extend(SubviewContainer.prototype, {
+  clear: function(){
+    _.invoke(this.views, 'remove');
+    this.views = [];
+    this.stopListening();  
+  }
+, add: function(view) {
+    if(!(view instanceof BaseView)) {
+      throw new TypeError("invalid subview");
+    }
+    view._sub.parent = this.self;
+    this.views.push(view);
+    var that = this;
+    view.on('all', function() {
+      that.trigger.apply(that, _(arguments).push(this));
+    });
+  }
+}, Backbone.Events)
 
 
 
 var BaseView = Backbone.View.extend({
 
   constructor: function() {
-    this._sub = new SubviewContainer();
+    this._sub = new SubviewContainer(this);
     return Backbone.View.apply(this, arguments);
   }
 
   /**
-   * subview
-   * @param  {BaseView|false} view to attach, or false to remove all
+   * attach a subview
+   * @param  {BaseView} view
+   * @return {BaseView} 
    */
 , subview: function(view) {
-    if(!view) {
-      _.invoke(this._sub.views, 'remove');
-      this._sub.views = [];
-      this._sub.stopListening();
-      return;
-    }
-
-    if(!(view instanceof BaseView)) {
-      throw new TypeError("invalid subview");
-    }
-
-    view._sub.parent = this;
-    this._sub.views.push(view);
-
-    var that = this;
-    view.on('all', function() {
-      that._sub.trigger.apply(that._sub, _(arguments).push(this));
-    });
-
+    this._sub.add(view);
     return view;
   }
 
@@ -101,7 +102,7 @@ var BaseView = Backbone.View.extend({
   }
 
 , empty: function() {
-    this.subview(false);
+    this._sub.clear();
     this.$el.empty().removeClass();
     this.trigger('emptied');
   }
