@@ -40,14 +40,18 @@ var BaseView = Backbone.View.extend({
   }
 
 , subview: function(view) {
-    if(!view instanceof BaseView) {
+    if(!(view instanceof BaseView)) {
       throw new TypeError("invalid subview");
     }
+
+    view._sub.parent = this;
     this._sub.views.push(view);
+
     var that = this;
     view.on('all', function() {
       that._sub.trigger.apply(that._sub, _(arguments).push(this));
     });
+
     return view;
   }
 
@@ -82,6 +86,8 @@ var BaseView = Backbone.View.extend({
    */
 , empty: function() {
     _.invoke(this._sub.views, 'remove');
+    this._sub.views = [];
+    this._sub.stopListening();
     this.$el.empty().removeClass();
     this.trigger('emptied');
   }
