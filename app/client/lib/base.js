@@ -32,14 +32,33 @@ function getTpl(template, callback) {
   });
 }
 
+function SubviewContainer() {
+  this.views = [];
+  return this;
+}
+_.extend(SubviewContainer.prototype, Backbone.Events)
+
+
+
 var BaseView = Backbone.View.extend({
 
   constructor: function() {
-    this._sub = _.extend({views:[]}, Backbone.Events);
+    this._sub = new SubviewContainer();
     return Backbone.View.apply(this, arguments);
   }
 
+  /**
+   * subview
+   * @param  {BaseView|false} view to attach, or false to remove all
+   */
 , subview: function(view) {
+    if(!view) {
+      _.invoke(this._sub.views, 'remove');
+      this._sub.views = [];
+      this._sub.stopListening();
+      return;
+    }
+
     if(!(view instanceof BaseView)) {
       throw new TypeError("invalid subview");
     }
@@ -81,13 +100,8 @@ var BaseView = Backbone.View.extend({
     return this;
   }
 
-  /**
-   * remove all subviews
-   */
 , empty: function() {
-    _.invoke(this._sub.views, 'remove');
-    this._sub.views = [];
-    this._sub.stopListening();
+    this.subview(false);
     this.$el.empty().removeClass();
     this.trigger('emptied');
   }
