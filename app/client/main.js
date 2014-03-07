@@ -12,7 +12,7 @@ $(function () {
 
 
     if(Page) {
-        (new Page()).render();
+        window.PAGE = (new Page()).render();
     }
 
 });

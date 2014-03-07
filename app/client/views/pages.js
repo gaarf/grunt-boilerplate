@@ -11,22 +11,32 @@ module.exports = {
 
     'homepage': Page.extend({
 
-      events: {
+
+      insertTestView: function() {
+
+        // make a new view, linked to this one
+        var s = this.subview(new TestView())
+         , $hero = this.$('.hero');
+
+        console.log(__filename, $hero);
+
+        // decide how it will be inserted
+        s.on('rendered', function() {
+          this.$el
+            .hide()
+            .prependTo($hero)
+            .fadeIn();
+        });
+
+        s.render(); // triggers fetching of client side templates
+      }
+
+
+
+    , events: {
         'click section.hero button': function(e) {
-          $(e.currentTarget).attr('disabled', true);
-
-          var $hero = this.$('.hero');
-
-          console.log(__filename, $hero);
-
-          (new TestView())
-            .on('rendered', function() {
-              this.$el
-                .hide()
-                .prependTo($hero)
-                .fadeIn();
-            })
-            .render() // triggers fetching of client side templates
+          this.$(e.currentTarget).attr('disabled', true);
+          this.insertTestView();
         }
   
       , 'click .flash-me-an-error': function(e) {

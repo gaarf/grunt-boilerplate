@@ -65,8 +65,8 @@ var User = DB.ValidatingModel.extend({
       }
     , set: function(value) {
         value = value.split(' ');
-        this.set('first_name', value[0]);
-        this.set('last_name', value[1]);
+        this.set('first_name', value.shift());
+        this.set('last_name', value.join(' '));
       }
     }
 
