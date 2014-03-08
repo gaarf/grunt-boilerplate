@@ -118,5 +118,15 @@ describe('Handlebars Helpers', function(){
 
   });
 
+  describe('{{deflist}}', function(){
+
+      it('makes a definition list', function(){
+        var thing = {foo: 'bar', 1: 'joy'}
+          , tpl = Handlebars.compile("{{deflist thing1 thing2}}")({thing1:thing, thing2:thing})
+          , output = "<dl>\n<dt>1</dt>\n<dd>joy</dd>\n<dt>foo</dt>\n<dd>bar</dd>\n</dl>\n";
+        expect(tpl).to.equal(output + output);
+      });
+
+  });
 
 });

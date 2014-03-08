@@ -145,6 +145,18 @@ module.exports = ex3hbs.create({
       }
 
 
+      /**
+       * {deflist something} definition list
+       * @param {Mixed} * 
+       * @return {String}
+       */
+    , "deflist": function() {
+        return new Handlebars.SafeString(_.chain(arguments).initial().reduce(function(memo, obj) {
+          return memo + "<dl>\n" + _.map(obj, function(val, key){
+            return "<dt>"+key+"</dt>\n<dd>"+val+"</dd>\n";
+          }).join('') + "</dl>\n";
+        }, '').value().toString());
+      }
 
 
       // , block: function(name){
