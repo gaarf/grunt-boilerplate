@@ -3,7 +3,10 @@ var PROJECT_ROOT = require('path').normalize(__dirname + '/../../..');
 var _ = require('underscore')
   , config = require(PROJECT_ROOT + '/etc/config.js')
   , ex3hbs = require('express3-handlebars')
-  , Handlebars = ex3hbs.create().handlebars;
+
+  , Handlebars = ex3hbs.create().handlebars
+  , SafeString = Handlebars.SafeString
+  , escapeExpression = Handlebars.Utils.escapeExpression;
 
 
 module.exports = ex3hbs.create({
@@ -113,7 +116,7 @@ module.exports = ex3hbs.create({
         data = Handlebars.createFrame(options.data || {});
         for(var i = from; i <= to; i += incr) {
           data.index = i;
-          accum += options.fn(this, {data: data}) + "\n";        
+          accum += options.fn(this, {data: data}) + "\n";
         }
         return accum;
       }
@@ -139,8 +142,8 @@ module.exports = ex3hbs.create({
        * @return {String}
        */
     , "json": function() {
-        return new Handlebars.SafeString(_.chain(arguments).initial().reduce(function(memo, obj) {
-          return memo + '<pre>' + JSON.stringify(obj, null, '\t') + '</pre>';
+        return new SafeString(_.chain(arguments).initial().reduce(function(memo, obj) {
+          return memo + '<pre>' + escapeExpression(JSON.stringify(obj, null, '\t')) + '</pre>';
         }, '').value().toString());
       }
 
@@ -151,9 +154,9 @@ module.exports = ex3hbs.create({
        * @return {String}
        */
     , "deflist": function() {
-        return new Handlebars.SafeString(_.chain(arguments).initial().reduce(function(memo, obj) {
+        return new SafeString(_.chain(arguments).initial().reduce(function(memo, obj) {
           return memo + "<dl>\n" + _.chain(obj).keys().sort().map(function(key){
-            return "<dt>"+key+"</dt>\n<dd>"+obj[key]+"</dd>";
+            return "<dt>"+escapeExpression(key)+"</dt>\n<dd>"+escapeExpression(obj[key])+"</dd>";
           }).value().join("\n") + "\n</dl>\n";
         }, '').value().toString());
       }
