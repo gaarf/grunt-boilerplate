@@ -153,8 +153,8 @@ module.exports = ex3hbs.create({
     , "deflist": function() {
         return new Handlebars.SafeString(_.chain(arguments).initial().reduce(function(memo, obj) {
           return memo + "<dl>\n" + _.chain(obj).keys().sort().map(function(key){
-            return "<dt>"+key+"</dt>\n<dd>"+obj[key]+"</dd>\n";
-          }).value().join('') + "</dl>\n";
+            return "<dt>"+key+"</dt>\n<dd>"+obj[key]+"</dd>";
+          }).value().join("\n") + "\n</dl>\n";
         }, '').value().toString());
       }
 
