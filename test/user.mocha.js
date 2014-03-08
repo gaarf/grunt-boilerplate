@@ -86,7 +86,7 @@ describe('User model', function(){
 
 
     before(function(done) {
-      bob.set('full_name','bob smith');
+      bob.set('full_name','bob van smith');
       bob.setPassword('foo').then(function() {
         bob.save().exec(done);
       });
@@ -114,7 +114,7 @@ describe('User model', function(){
 
       User.forge({email:email}).fetch().then(function(model){
         expect(model.get('first_name')).to.equal('bob');
-        expect(model.get('last_name')).to.equal('smith');
+        expect(model.get('last_name')).to.equal('van smith');
         done();
       });
 

@@ -53,7 +53,7 @@ _.extend(SubviewContainer.prototype, Backbone.Events, {
       this.trigger.apply(this, _(arguments).push(view));
     });
   }
-})
+});
 
 
 

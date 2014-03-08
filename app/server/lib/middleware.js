@@ -4,8 +4,8 @@ var auth = require(__dirname + '/auth.js')
 
       setLocals: function (req, res, next) {
         res.locals({
-            csrfToken: req.csrfToken()
-          , flashMessages: req.flash()
+            csrfToken: req.csrfToken.bind(req)
+          , flashMessages: req.flash.bind(req)
         });
         next();
       }

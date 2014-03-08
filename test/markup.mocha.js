@@ -8,8 +8,8 @@ var tidy = require('htmltidy').tidy
 
   , IGNORES = [
       'Warning: trimming empty <i>'
-    // , "Warning: plain text isn't allowed in <tbody> elements"
-    // , "Info: <tbody> previously mentioned"
+    , "Warning: plain text isn't allowed in <tbody> elements"
+    , "Info: <tbody> previously mentioned"
     // , 'Warning: <img> lacks "alt" attribute'
     ];
 
@@ -26,14 +26,17 @@ describe('Markup', function(){
                     fs.readFile(file, function(err, data) {
                         data = data.toString();
 
-                        var doctype = '<!DOCTYPE html>';
+                        var doctype = '<!DOCTYPE html';
                         if(data.indexOf(doctype)!==0) {
-                            data = doctype + "<html><head><title></title></head><body>" 
+                            data = doctype + ">\n<html><head><title></title></head><body>" 
                                 + data + "</body></html>";
                         }
 
                         tidy(
-                            data.replace(/{{[#\/][^}]+}}/g, '') // remove block mustaches, keep their content
+                            data
+                              .replace(/{{!--[^]*--}}/g, '') // remove mustache comments
+                              .replace(/{{[#\/][^}]+}}/g, '') // remove block mustaches, keep their content
+                              .replace(/{{else}}/g, '') // remove else mustaches
                           , { showWarnings: true, quiet: true }
                           , function(result) {
                                 var errors = _.chain(result.split("\n")).compact().filter(function(msg) {

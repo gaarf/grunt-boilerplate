@@ -1,10 +1,10 @@
 var expect = require('chai').expect
   , _ = require('underscore');
 
-var HandlebarHelpers = require('../app/server/helpers.js')
+var hbs = require('../app/server/lib/hbs.js')
   , Handlebars = require('express3-handlebars').create().handlebars;
 
-_.each(HandlebarHelpers, function(fn, name) {
+_.each(hbs.helpers, function(fn, name) {
   Handlebars.registerHelper(name, fn);
 });
 
@@ -39,6 +39,7 @@ describe('Handlebars Helpers', function(){
       });
 
       it('{{#repeat}} doesnt crash', function(){
+
         expect(
           Handlebars.compile('{{#repeat}}test{{/repeat}}')()
         ).to.equal('');
@@ -90,15 +91,16 @@ describe('Handlebars Helpers', function(){
       });
   });
 
-  describe('{{#block}} & {{#contentFor}}', function(){
+
+  describe('{{#block}} & {{contentFor}}', function(){
 
 
       it('{{#block}} is commented out for now', function(){
-        expect(HandlebarHelpers.block).to.be.undefined;
+        expect(hbs.helpers.block).to.be.undefined;
       });
 
-      it('{{#contentFor}} is commented out for now', function(){
-        expect(HandlebarHelpers.contentFor).to.not.exist; // null or undefined
+      it('{{contentFor}} is commented out for now', function(){
+        expect(hbs.helpers.contentFor).to.not.exist; // null or undefined
       });
 
   });

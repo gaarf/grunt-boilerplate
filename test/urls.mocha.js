@@ -1,19 +1,18 @@
 /*jshint loopfunc:true */
 
+var u = require('./_util.js')(__filename)
+  , expect = u.chai.expect
+  , app = u.boot.app;
+
 var _ = require('underscore')
-  , chai = require('chai').use(require('chai-http'))
-  , expect = chai.expect
-  , app = require('../app/server/boot.js').app
   , controllers = require('../app/server/controllers')
   , URLS = (function(){
 /*
 
-/
 /login
 /login/forgot
 /logout
 /signup
-
 
 */
   return _(arguments.callee.toString().split("\n"))
@@ -26,42 +25,31 @@ var _ = require('underscore')
 
 describe('URLs', function() {
 
-  it('homepage', function(done){
-
-    chai.request(app)
-      .get('/')
-      .res(function (res) {
-
-        expect(res).to.have.status(200);
-        expect(res).to.be.html;
-
-        done();
-      });
-
-  });
+  before(u.startServer);
+  // before(u.agentInit);
+  after(u.stopServer);
 
   for (var i = 0; i < URLS.length; i++) {
     var s = URLS[i].split(" => ");
     it(
       s[0]
     , (function(done){
-        var u = this;
-        chai.request(app)
-          .get(u[0].replace(/(\:\w+)/g, 'test'))
-          .req(function(req) {
-            req.redirects(0);
-          })
-          .res(function(res){
-            if(u[1]) {
+        var url = this;
+
+        u.agentRequest('GET '+url[0].replace(/(\:\w+)/g, 'test'))
+          .redirects(0)
+          .end(function(err, res) {
+            if(url[1]) {
               expect(res).to.have.status(302);
-              expect(res).to.have.header('location', u[1]);
+              expect(res).to.have.header('location', url[1]);
             }
             else {
               expect(res).to.have.status(200);
-              expect(res.text).to.include('body class="' + controllers.routeToBodyClass(u[0]));
+              expect(res.text).to.include('body class="' + controllers.routeToBodyClass(url[0]));
             }
             done();
           });
+
       }).bind(s)
     );
   }
@@ -70,6 +58,9 @@ describe('URLs', function() {
 
 
 describe('errors', function(){
+
+  before(u.startServer);
+  after(u.stopServer);
 
   var calls = {
 
@@ -94,12 +85,10 @@ describe('errors', function(){
 
   function doCall(done){
     var that = this;
-    chai.request(app)
-      .get(that.url)
-      .req(function (req) {
-          req.set('accept', that.accept);
-        })
-      .res(function(res){
+
+    u.agentRequest('GET '+that.url)
+      .set('accept', that.accept)
+      .end(function (err, res) {
         calls[that.url].call(res);
         that.cb.call(res);
         done();

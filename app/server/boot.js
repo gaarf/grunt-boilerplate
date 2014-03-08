@@ -2,8 +2,8 @@
  * boot the app!
  */
 
-var _ROOT = __dirname + '/../..'
-  , config = require(_ROOT + '/etc/config.js')
+var PROJECT_ROOT = require('path').normalize(__dirname + '/../..')
+  , config = require(PROJECT_ROOT + '/etc/config.js')
 
   , express = require('express')
   , app = express()
@@ -11,13 +11,7 @@ var _ROOT = __dirname + '/../..'
   , controllers = require(__dirname + '/controllers')
   , DB = require(__dirname + '/models').call(config)
 
-  , hbs = require('express3-handlebars').create({
-        extname: '.hbs'
-      , defaultLayout: 'default'
-      , helpers: require(__dirname + '/helpers.js')
-      , layoutsDir: __dirname + '/templates/layouts'
-      , partialsDir: __dirname + '/templates/partials'
-    });
+  , hbs = require(__dirname + '/lib/hbs.js');
 
 
 /**
@@ -54,7 +48,7 @@ app.configure('staging', 'production', function(){
  */
 app.use(express.favicon());
 app.use('/public/fonts', controllers.restrictFonts);
-app.use('/public', express.static(_ROOT + '/public', { maxAge: 60 * 60 * 1000 }));
+app.use('/public', express.static(PROJECT_ROOT + '/public', { maxAge: 60 * 60 * 1000 }));
 
 
 /**
@@ -142,7 +136,7 @@ function up() {
 
           // PID file is used by livereload to detect server restart
           controllers.writePid(
-            _ROOT + '/var/' + name + '_' + port + '.pid'
+            PROJECT_ROOT + '/var/' + name + '_' + port + '.pid'
           );
       });
     }
@@ -157,7 +151,6 @@ module.exports = {
     up: up
   , app: app
   , config: config
-  , handlebars: hbs.handlebars
   , DB: DB
 };
 

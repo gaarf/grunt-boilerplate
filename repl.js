@@ -10,7 +10,7 @@ console.log(
 , boot.app.settings.env
 );
 
-var context = repl.start("\n▶ ").context;
+var context = repl.start("▶ ").context;
 
 for (var k in boot.DB._models) {
   context[k] = boot.DB.model(k);

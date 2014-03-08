@@ -1,42 +1,25 @@
-var chai = require('chai').use(require('chai-http'))
-  , expect = chai.expect
-  , harbor = require('harbor')(2222,2999)
-  , http = require('http')
-  , fs = require('fs')
-  , app = require('../app/server/boot.js').app
+var u = require('./_util.js')(__filename)
+  , expect = u.chai.expect
 
+  , fs = require('fs')
   , childProcess = require('child_process')
   , phantomjs = require('phantomjs')
-  , qunitPath = '/test/qunit/';
+  , QUNIT_PATH = '/test/qunit/';
 
 
 describe('Client-side', function(){
 
-    var server = http.createServer(app);
-
-    before(function(done) {
-      harbor.claim(__filename, function(err, port) {
-        server.listen(port, done);
-      });
-    });
-
-    after(function(done) {
-      harbor.release(__filename);
-      server.close(done);
-    });
-
+    before(u.startServer);
+    after(u.stopServer);
 
     describe('QUnit', function(){
 
       it('could be opened in a browser', function(done){
 
-        chai.request(server)
-          .get(qunitPath)
-          .res(function (res) {
-
+        u.agentRequest('GET '+QUNIT_PATH)
+          .end(function(err, res) {
             expect(res).to.have.status(200);
             expect(res).to.be.html;
-
             done();
           });
 
@@ -51,13 +34,12 @@ describe('Client-side', function(){
       maybe('no errors via PhantomJS', function(done){
         this.timeout(9999);
 
-        var a = server.address()
-          , url = 'http://' + a.address + ':' + a.port + qunitPath;
+        var url = u.absoluteUrl(QUNIT_PATH);
 
         childProcess.execFile(
           phantomjs.path
         , [
-            __dirname + '/../node_modules/phantomjs/lib/phantom/examples/run-qunit.js'
+            __dirname + '/qunit/_phantom.js'
           , url
           ]
         , function(err, stdout, stderr) {

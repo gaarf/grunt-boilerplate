@@ -1,9 +1,8 @@
 /*jshint loopfunc:true */
 
-var chai = require('chai').use(require('chai-http'))
-  , expect = chai.expect
-  , app = require('../app/server/boot.js').app;
-
+var u = require('./_util.js')(__filename)
+  , expect = u.chai.expect
+  , app = u.boot.app;
 
 describe('Sessions', function() {
   var testString = Date.now() + 'testing';
@@ -17,38 +16,38 @@ describe('Sessions', function() {
     });
   });
 
-  it('(control)', function(done){
+  before(u.startServer);
+  after(u.stopServer);
 
-    chai.request(app)
-      .get('/'+testString)
-      .res(function(res) {
+  it('(control)', function(done){
+    u.agentRequest('GET /'+testString)
+      .end(function(err, res) {
         expect(res.body.session).to.be.an('object');
         expect(res.body.session.test).to.be.undefined;
         done();
       });
-
   });
 
-  it('persist accross requests', function(done){
-    
-    chai.request(app)
-      .get('/'+testString + '?setSession=1')
-      .res(function(res1) {
-        expect(res1.body.session).to.be.an('object');
-        expect(res1.body.session.test).to.equal(testString);
+  describe('persist', function(){
+    before(u.agentInit);
 
-        chai.request(app)
-          .get('/'+testString)
-          .req(function(req2) {
-            setCookie(req2, res1);
-          })
-          .res(function(res2) {
-            expect(res2.body.session).to.be.an('object');
-            expect(res2.body.session.test).to.equal(testString);
-            done();
-          });
+    it('accross requests', function(done){
 
-      });
+      u.agentRequest('GET /'+testString + '?setSession=1')
+        .end(function(err1, res1) {
+          expect(res1.body.session).to.be.an('object');
+          expect(res1.body.session.test).to.equal(testString);
+
+
+          u.agentRequest('GET /'+testString)
+            .end(function(err2, res2) {
+              expect(res2.body.session).to.be.an('object');
+              expect(res2.body.session.test).to.equal(testString);
+              done();
+            });
+
+        });
+    });
 
   });
 
@@ -57,47 +56,36 @@ describe('Sessions', function() {
 
 describe('CSRF', function() {
 
+  before(u.startServer);
+  after(u.stopServer);
+
   it('cannot plainly post to home', function(done){
 
-    chai.request(app)
-      .post('/')
-      .res(function(res) {
+    u.agentRequest('POST /')
+      .end(function(err, res) {
         expect(res).to.have.status(403);
         done();
       });
 
   });
 
-  it('can post with token', function(done){
-    
-    chai.request(app)
-      .get('/')
-      .res(function(res1) {
-        expect(res1).to.have.status(200);
-        expect(res1).to.be.html;
 
-        var token = res1.text.match(/<meta name="csrf-token" content="([^"]+)"/)[1];
-        expect(token).to.be.ok;
+  describe('agentInit', function(done){
+    before(u.agentInit);
 
-        chai.request(app)
-          .post('/')
-          .req(function(req2) {
-            setCookie(req2, res1);
-            req2.set('X-CSRF-Token', token);
-          })
-          .res(function(res2) {
-            expect(res2).to.have.status(200);
-            done();
-          });
 
-      });
+    it('injects token', function(done){
+
+      u.agentRequest('POST /')
+        .end(function(err, res) {
+          expect(res).to.have.status(200);
+          done();
+        });
+
+    });
 
   });
 
 });
 
 
-
-function setCookie(req, res) {
-  req.set('cookie', res.get('set-cookie')[0].split('; ')[0]);
-}
