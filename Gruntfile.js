@@ -1,3 +1,5 @@
+var config = require('./etc/config.js');
+
 module.exports = function (grunt) {
 
   // load all grunt tasks matching the `grunt-*` pattern
@@ -43,29 +45,30 @@ module.exports = function (grunt) {
 
 
   grunt.registerTask('redis', "Ensure Redis is running.", function() {
-    grunt.log.writeln("Redis is commented out!");
-    // var async = this.async();
-    // grunt.util.spawn({
-    //       cmd: 'redis-cli'
-    //     , args: ['ping']
-    //     }
-    //   , function(err) {
-    //       if(!err) {
-    //         return async();
-    //       }
-    //       grunt.util.spawn({
-    //             cmd: 'redis-server'
-    //           , args: [ '/usr/local/etc/redis.conf', '--daemonize yes' ]
-    //           }
-    //         , async
-    //       );
-    //     }
-    // );
+    if(config.get('redis:host') === 'localhost') {
+      var async = this.async();
+      grunt.util.spawn({
+            cmd: 'redis-cli'
+          , args: ['ping']
+          }
+        , function(err) {
+            if(!err) {
+              return async();
+            }
+            grunt.util.spawn({
+                  cmd: 'redis-server'
+                , args: [ '/usr/local/etc/redis.conf', '--daemonize yes' ]
+                }
+              , async
+            );
+          }
+      );
+    }
   });
 
 
   grunt.registerTask('mysql', "Ensure MySQL is running.", function() {
-    if(require('./etc/config.js').get('mysql:host') === 'localhost') {
+    if(config.get('mysql:host') === 'localhost') {
       grunt.util.spawn({
             cmd: 'mysql.server'
           , args: ["start"]

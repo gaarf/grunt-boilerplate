@@ -63,12 +63,19 @@ app.use(express.cookieParser());
 /**
  * sessions
  */
-var RedisStore = require('connect-redis')(express);
+var RedisStore = require('connect-redis')(express)
+  , FAILURE = null;
+
+app.use(function(req, res, next) {
+  next(FAILURE);
+});
+
 app.use(express.session({
   secret: config.get('sessions:secret')
-// , store: (new RedisStore(config.get('redis'))).on('disconnect', function() {
-//     throw new Error('Redis disconnected!');
-//   })
+, store: (new RedisStore(config.get('redis'))).on('disconnect', function() {
+    FAILURE = new Error("Redis disconnected!");
+    console.info(new Date(), FAILURE);
+  })
 }));
 
 /**
