@@ -1,7 +1,7 @@
 module.exports = function (grunt) {
 
   // load all grunt tasks matching the `grunt-*` pattern
-  require('load-grunt-tasks')(grunt);
+  require('load-grunt-tasks')(grunt, {scope: ['devDependencies', 'optionalDependencies']});
 
   grunt.initConfig(grunt.file.readJSON('etc/grunt.json'));
 
@@ -65,19 +65,25 @@ module.exports = function (grunt) {
 
 
   grunt.registerTask('mysql', "Ensure MySQL is running.", function() {
-    grunt.util.spawn({
-          cmd: 'mysql.server'
-        , args: ["start"]
-        }
-      , this.async()
-    );
+    if(require('./etc/config.js').get('mysql:host') === 'localhost') {
+      grunt.util.spawn({
+            cmd: 'mysql.server'
+          , args: ["start"]
+          }
+        , this.async()
+      );      
+    }
   });
 
   grunt.registerTask('db', [ "redis", "mysql", "migrate:latest" ]);
 
-  grunt.registerTask('dev', [ "db", "build:dev", "concurrent:dev"]);
 
-  grunt.registerTask('stage', [ "build:prod", "deploy:staging"]);
+
+  if(grunt.file.exists('./node_modules/grunt-concurrent')) { // optionalDependencies
+    grunt.registerTask('dev', [ "db", "build:dev", "concurrent:dev"]);
+  }
+
+
 
   grunt.registerTask('generate', function(s, t, o) {
     t = t || 'dev';
@@ -118,6 +124,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask('qunit', [ "db", "generate:qunit", "generate:hbs", "mochaTest:client" ]);
 
-  grunt.registerTask('default', [ "db", "jshint", "build", "test" ]);
+  grunt.registerTask('default', [ "db", "build", "test" ]);
 
 }

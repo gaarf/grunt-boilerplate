@@ -1,7 +1,6 @@
 {
 
 
-
   "jshint": {
     "options": {
       "jshintrc": "etc/jshintrc.json"
@@ -10,6 +9,7 @@
       "Gruntfile.js"
     , "app/**/*.js"
     , "test/**/*.js"
+    , "!test/qunit/_phantom.js"
     ]
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "kitchensink-boilerplate",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Express + Grunt boilerplate",
   "main": "app/server/boot.js",
   "scripts": {
@@ -18,29 +18,34 @@
   "devDependencies": {
     "grunt": "~0.4",
     "mocha": "~1.17",
+
     "browserify": "~3",
     "uglify-js": "~2.4",
+
     "load-grunt-tasks": "~0.4",
     "grunt-contrib-less": "~0.10",
-    "grunt-contrib-jshint": "~0.8",
     "grunt-contrib-clean": "~0.5",
     "grunt-contrib-concat": "~0.3",
     "grunt-autoprefixer": "~0.7.2",
     "grunt-contrib-cssmin": "~0.9",
-    "grunt-contrib-imagemin": "~0.5",
-    "grunt-contrib-watch": "~0.5",
-    "grunt-concurrent": "~0.5",
-    "grunt-nodemon": "~0.2",
     "grunt-browserify": "~1.3",
     "grunt-contrib-uglify": "~0.4",
     "grunt-contrib-handlebars": "~0.7",
     "grunt-mocha-test": "~0.9.0",
+
     "phantomjs": "~1.9.7-1",
     "htmltidy": "0.0.6",
     "chai": "~1.9",
     "chai-http": "~0.4",
     "harbor": "~0.2.0",
     "superagent": "~0.17.0"
+  },
+  "optionalDependencies": {
+    "grunt-contrib-jshint": "~0.8",
+    "grunt-contrib-imagemin": "~0.5",
+    "grunt-contrib-watch": "~0.5",
+    "grunt-concurrent": "~0.5",
+    "grunt-nodemon": "~0.2"
   },
   "dependencies": {
     "express": "~3.4",
