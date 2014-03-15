@@ -5,7 +5,6 @@ var $ = require('jquery')
 
 Backbone.$ = $;
 
-
 /**
  * fetches client-side templates if needed
  * @param  {Function} callback
@@ -20,13 +19,25 @@ function getTpl(template, callback) {
   if(window.JST) {
     return complete();
   }
-  console.log('fetching JST...');
+  if(_.isNull(window.JST)) {
+    return _.delay(getTpl, 500, template, callback);
+  }
+  window.JST = null;
+
+  var url = '/public/generated/templates'
+    , v = $('meta[name=version]').attr("content");
+  if(v && v!=='dev') { url += '.min-'+v; }
+  url += '.js';
+
+  console.log('fetching JST...', url);
+
   $.ajax({
-    url: '/public/generated/templates.js'
+    url: url
   , dataType: "script"
   , cache: true
   , complete: complete
   , error: function(xhr, status, err) {
+      delete window.JST;
       throw err;
     }
   });
@@ -53,7 +64,7 @@ _.extend(SubviewContainer.prototype, Backbone.Events, {
       this.trigger.apply(this, _(arguments).push(view));
     });
   }
-});
+})
 
 
 
@@ -87,6 +98,9 @@ var BaseView = Backbone.View.extend({
           if(this.model) {
             _.extend(ctxt, this.model.toJSON());
           }
+          if(this.collection && !ctxt.collection) {
+            ctxt.collection = this.collection.toJSON();
+          }
           this.$el.html(
             _.isFunction(tpl) ? tpl(ctxt) : tpl.toString()
           );
@@ -96,6 +110,9 @@ var BaseView = Backbone.View.extend({
           console.error('missing template', this.template);
         }
       }, this));
+    }
+    else {
+      this.trigger('rendered');
     }
     return this;
   }
